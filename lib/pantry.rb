@@ -1,10 +1,11 @@
 require 'pry'
-#* Centi-Units -- Equals 100 Universal Units
-#* Milli-Units -- Equals 1/1000 Universal Units
 class Pantry
-  attr_reader :stock
+  attr_reader :stock,
+              :shopping_list
+
   def initialize
     @stock = {}
+    @shopping_list = ShoppingList.new.list
   end
 
   def stock_check(item)
@@ -20,10 +21,6 @@ class Pantry
   end
 
   def convert_units(recipe)
-    #1. If the recipe calls for more than
-    #100 Units of an ingredient, convert it to Centi-units
-    #2. If the recipe calls for less than 1 Units of an ingredient,
-    #convert it to Milli-units
     converted_ingredients = {}
     recipe.ingredients.map do |k,v|
       if v > 100
@@ -39,4 +36,42 @@ class Pantry
     converted_ingredients
   end
 
+  def add_to_shopping_list(recipe)
+    recipe.ingredients.map do |k,v|
+      if shopping_list[k]
+        shopping_list[k] += v
+      else
+        @shopping_list[k] = v
+      end
+    end
+  end
+
+  def print_shopping_list
+    modified_ingredients = modify_ingredients(shopping_list)
+    new_list = modified_ingredients.inject({}){|hash,(k,v)| hash[k.to_sym] = v; hash}
+    print_list = ""
+    new_list.select do |k,v|
+      print_list << "* #{k}: #{v}\n"
+    end
+    leng = print_list.length-1
+    print_list = print_list[0..leng-1]
+    puts print_list
+    print_list
+  end
+
+private
+
+  def modify_ingredients(hash)
+    hash.select do |k,v|
+      if k == "Noodles"
+        k = "Spaghetti Noodles"
+      elsif k == "Sauce"
+        k = "Marinara Sauce"
+      elsif k == "Cheese"
+        hash[k] -= 5
+      else
+        k
+      end
+    end
+  end
 end

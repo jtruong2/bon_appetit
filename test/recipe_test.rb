@@ -1,7 +1,4 @@
-require './lib/recipe'
-require 'minitest/autorun'
-require 'minitest/pride'
-require 'pry'
+require_relative 'test_helper'
 
 class RecipeTest < Minitest::Test
   def test_it_has_a_name
